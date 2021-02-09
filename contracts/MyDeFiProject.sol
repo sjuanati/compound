@@ -2,9 +2,9 @@
 pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./CTokenInterface.sol";
-import "./ComptrollerInterface.sol";
-import "./PriceOracleInterface.sol";
+import "./interfaces/CTokenInterface.sol";
+import "./interfaces/ComptrollerInterface.sol";
+import "./interfaces/PriceOracleInterface.sol";
 
 contract MyDeFiProject {
     ComptrollerInterface public comptroller;
