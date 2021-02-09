@@ -6,7 +6,7 @@ import "./interfaces/CTokenInterface.sol";
 import "./interfaces/ComptrollerInterface.sol";
 import "./interfaces/PriceOracleInterface.sol";
 
-contract MyDeFiProject {
+contract Compound {
     ComptrollerInterface public comptroller;
     PriceOracleInterface public priceOracle;
 
@@ -29,7 +29,7 @@ contract MyDeFiProject {
     }
 
     // Reedem the token plus the interest
-    function redeem(address cTokenAddress, cTokenAmount) external {
+    function redeem(address cTokenAddress, uint256 cTokenAmount) external {
         CTokenInterface cToken = CTokenInterface(cTokenAddress);
         uint256 result = cToken.redeem(cTokenAmount); // Alternatively, cToken.redeemUnderlying(redeemAmount);
         require(
@@ -46,7 +46,7 @@ contract MyDeFiProject {
         markets[0] = cTokenAddress;
         uint256[] memory results = comptroller.enterMarkets(markets);
         require(
-            results[0] == 0,  // because we add only 1 cToken
+            results[0] == 0, // because we add only 1 cToken
             "comptroller#enterMarket() failed. See Compound ErrorReporter.sol for more details"
         );
     }
@@ -54,7 +54,7 @@ contract MyDeFiProject {
     // borrow tokens (after enterMarket)
     function borrow(address cTokenAddress, uint256 borrowAmount) external {
         CTokenInterface cToken = CTokenInterface(cTokenAddress);
-        address underlyingAddress = cToken.underlying();
+        //address underlyingAddress = cToken.underlying();
         uint256 result = cToken.borrow(borrowAmount);
         require(
             result == 0,
@@ -88,9 +88,9 @@ contract MyDeFiProject {
             result == 0,
             "comptroller#getAccountLiquidity() failed. See Compound ErrorReporter.sol for more details"
         );
-        require(shortfall == 0, 'account underwater');
-        require(liquidity > 0, 'account does not have collateral'); // otherwise, we are at the limit
-        uint underlyingPrice = priceOracle.getUnderlyingPrice(cTokenAddress); // e.g.: if we pass cDAI, it will return the price of DAI
+        require(shortfall == 0, "account underwater");
+        require(liquidity > 0, "account does not have collateral"); // otherwise, we are at the limit
+        uint256 underlyingPrice = priceOracle.getUnderlyingPrice(cTokenAddress); // e.g.: if we pass cDAI, it will return the price of DAI
         return liquidity / underlyingPrice;
     }
 }
