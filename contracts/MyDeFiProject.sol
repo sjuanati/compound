@@ -15,7 +15,7 @@ contract MyDeFiProject {
         priceOracle = PriceOracleInterface(_priceOracle);
     }
 
-    /* LENDING PART */
+    /**************** LENDING PART ***************/
 
     function supply(address cTokenAddress, uint256 underlyingAmount) external {
         CTokenInterface cToken = CTokenInterface(cTokenAddress);
@@ -28,16 +28,17 @@ contract MyDeFiProject {
         );
     }
 
+    // Reedem the token plus the interest
     function redeem(address cTokenAddress, cTokenAmount) external {
         CTokenInterface cToken = CTokenInterface(cTokenAddress);
-        cToken.redeem(cTokenAmount);
+        uint256 result = cToken.redeem(cTokenAmount); // Alternatively, cToken.redeemUnderlying(redeemAmount);
         require(
             result == 0,
             "cToken#redeem() failed. See Compound ErrorReporter.sol for more details"
         );
     }
 
-    /* BORROWING PART */
+    /**************** BORROWING PART ***************/
 
     // to determine which token to use as collateral
     function enterMarket(address cTokenAddress) external {
@@ -45,12 +46,12 @@ contract MyDeFiProject {
         markets[0] = cTokenAddress;
         uint256[] memory results = comptroller.enterMarkets(markets);
         require(
-            results[0] == 0,
+            results[0] == 0,  // because we add only 1 cToken
             "comptroller#enterMarket() failed. See Compound ErrorReporter.sol for more details"
         );
     }
 
-    // borrow tokens
+    // borrow tokens (after enterMarket)
     function borrow(address cTokenAddress, uint256 borrowAmount) external {
         CTokenInterface cToken = CTokenInterface(cTokenAddress);
         address underlyingAddress = cToken.underlying();
@@ -58,7 +59,7 @@ contract MyDeFiProject {
         require(
             result == 0,
             "cToken#borrow() failed. See Compound ErrorReporter.sol for more details"
-        );
+        ); // if it fails, it is likely that we don't have enough collateral
     }
 
     // repay the loan
@@ -75,6 +76,7 @@ contract MyDeFiProject {
         );
     }
 
+    // Determine what is the maximum amount we can borrow for any asset
     function getMaxBorrow(address cTokenAddress)
         external
         view
@@ -87,8 +89,8 @@ contract MyDeFiProject {
             "comptroller#getAccountLiquidity() failed. See Compound ErrorReporter.sol for more details"
         );
         require(shortfall == 0, 'account underwater');
-        require(liquidity > 0, 'account does not have collateral');
-        uint underlyingPrice = priceOracle.getUnderlyingPrice(cTokenAddress);
+        require(liquidity > 0, 'account does not have collateral'); // otherwise, we are at the limit
+        uint underlyingPrice = priceOracle.getUnderlyingPrice(cTokenAddress); // e.g.: if we pass cDAI, it will return the price of DAI
         return liquidity / underlyingPrice;
     }
 }
