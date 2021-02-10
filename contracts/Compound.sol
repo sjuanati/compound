@@ -17,6 +17,9 @@ contract Compound {
 
     /**************** LENDING PART ***************/
 
+    // 1. Collateral (underlyingAmount) must be transferred first to this contract (e.g. UNI or DAI)
+    
+    // 2. Supply the token
     function supply(address cTokenAddress, uint256 underlyingAmount) external {
         CTokenInterface cToken = CTokenInterface(cTokenAddress);
         address underlyingAddress = cToken.underlying();

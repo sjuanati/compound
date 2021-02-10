@@ -23,3 +23,8 @@ module.exports = function (deployer, network) {
 };
 
 // Compound at Ropsten: 0x45c307b844b3bE1cE9C2823fBE16235f5172dc6B
+
+
+// cDAI: 	0x8354C3a332FFB24E3A27be252E01aCFE65A33B35
+// cUNI: 	0x22531F0f3a9c36Bfc3b04c4c60df5168A1cFCec3
+// cBAT: 	0x9E95c0b2412cE50C37a121622308e7a6177F819D
